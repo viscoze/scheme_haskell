@@ -1,6 +1,6 @@
 module LispParser where
 
-import Monad
+import Control.Monad
 import Text.ParserCombinators.Parsec hiding (spaces)
 
 parseString :: Parser LispVal
@@ -28,10 +28,11 @@ parseExpr = parseAtom
         <|> parseString
         <|> parseNumber
         <|> parseQuoted
-        <|> do char '('
-                x <- (try parseList) <|> parseDottedList
-                char ')'
-                return x
+        <|> do
+              char '('
+              x <- (try parseList) <|> parseDottedList
+              char ')'
+              return x
 
 parseList :: Parser LispVal
 parseList = liftM List $ sepBy parseExpr spaces
